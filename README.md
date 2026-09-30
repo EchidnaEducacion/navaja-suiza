@@ -473,7 +473,170 @@ git remote -v
 
 ---
 
-# 14. Comprobación final
+# 14. Crear un proyecto local con Git y subirlo a GitHub
+
+Este apartado describe el flujo completo para empezar un proyecto nuevo en local, ponerlo bajo control de versiones y publicarlo en GitHub.
+
+## Crear el directorio del proyecto
+
+```bash
+mkdir -p ~/proyectos/mi-proyecto
+cd ~/proyectos/mi-proyecto
+```
+
+## Inicializar el repositorio
+
+```bash
+git init
+```
+
+Esto crea el directorio oculto `.git`, donde Git guarda todo el historial del proyecto.
+
+Si no se configuró `init.defaultBranch` en el apartado 2, asegurarse de que la rama principal se llama `main`:
+
+```bash
+git branch -M main
+```
+
+## Crear los primeros archivos
+
+Un `README.md` con la descripción del proyecto:
+
+```bash
+echo "# Mi proyecto" > README.md
+```
+
+Un `.gitignore` con los archivos y directorios que **no** deben versionarse (dependencias, entornos virtuales, ficheros de configuración local, secretos, etc.). Por ejemplo:
+
+```bash
+cat > .gitignore << 'EOF'
+# Dependencias y entornos
+node_modules/
+.venv/
+__pycache__/
+
+# Configuración local y secretos
+.env
+
+# Editores y sistema
+.vscode/
+.idea/
+.DS_Store
+EOF
+```
+
+> En <https://github.com/github/gitignore> hay plantillas de `.gitignore` para la mayoría de lenguajes y frameworks.
+
+## Hacer el primer commit
+
+Ver el estado del repositorio:
+
+```bash
+git status
+```
+
+Añadir los archivos al área de preparación (*staging*):
+
+```bash
+git add .
+```
+
+Revisar qué se va a incluir en el commit:
+
+```bash
+git status
+```
+
+Crear el commit:
+
+```bash
+git commit -m "Commit inicial"
+```
+
+Consultar el historial:
+
+```bash
+git log --oneline
+```
+
+## Subir el proyecto a GitHub
+
+Hay dos formas de hacerlo.
+
+### Opción A: mediante GitHub CLI
+
+Desde el directorio del proyecto:
+
+```bash
+gh repo create mi-proyecto \
+    --private \
+    --source=. \
+    --remote=origin \
+    --push
+```
+
+Este comando crea el repositorio en GitHub, añade el remoto `origin` y sube la rama actual. Utilizar `--public` en lugar de `--private` si el repositorio debe ser público.
+
+### Opción B: creando el repositorio desde la web
+
+Entrar en GitHub y crear un repositorio nuevo:
+
+```text
++ (esquina superior derecha)
+ └── New repository
+```
+
+Indicar el nombre (`mi-proyecto`) y la visibilidad. **No marcar** las opciones de añadir README, `.gitignore` ni licencia, ya que el repositorio local ya tiene su propio contenido y se producirían conflictos al subirlo.
+
+Añadir el repositorio de GitHub como remoto usando la URL SSH:
+
+```bash
+git remote add origin git@github.com:USUARIO/mi-proyecto.git
+```
+
+Comprobar el remoto:
+
+```bash
+git remote -v
+```
+
+Subir la rama `main` y dejarla vinculada con la rama remota:
+
+```bash
+git push -u origin main
+```
+
+La opción `-u` solo es necesaria la primera vez; a partir de ahí basta con `git push`.
+
+## Flujo de trabajo habitual
+
+Una vez publicado el proyecto, el ciclo normal de trabajo es:
+
+```bash
+# Traer los cambios del remoto
+git pull
+
+# ... editar archivos ...
+
+# Revisar y confirmar los cambios
+git status
+git diff
+git add .
+git commit -m "Descripción del cambio"
+
+# Subirlos a GitHub
+git push
+```
+
+Abrir el repositorio en el navegador:
+
+```bash
+gh repo view --web
+```
+
+---
+
+# 15. Comprobación final
 
 Ejecutar:
 
